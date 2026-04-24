@@ -3,6 +3,7 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 
 import asyncio
+import json
 from flask_restx import Resource, Namespace
 
 from app.api.utils.rule_validation import *
@@ -133,13 +134,12 @@ class CreateRule(Resource):
         matches = []
 
         if cve_id:
-            import json as _json
             valid, matches_json = utils.detect_cve(str(cve_id).strip())
             if not valid:
                 return {"message": "Invalid CVE ID format or not recognized"}, 400
-            matches = _json.loads(matches_json)
+            matches = json.loads(matches_json)
             if not matches:
-                return {"message": "Invalid CVE ID format or not recognized"}, 400
+                return {"message": "Invalid CVE ID format: no recognized vulnerability patterns found"}, 400
 
         form_dict = {
             'title': title,
